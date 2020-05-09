@@ -69,10 +69,10 @@ def Insert_row(row_number, df, row_value):
 
 
 def main():
-    data = pd.read_excel('COVID-19.xlsx', sheet_name='Sheet1')
+    data = pd.read_excel('Database/COVID-19.xlsx', sheet_name='Sheet1')
     data=PreProcessData(data)
     data=PreProcessData2(data)
-    data.to_excel(r'PreProcessedCOVID-19.xlsx', sheet_name='Sheet1', index = False)
+    data.to_excel(r'Database/PreProcessedCOVID-19.xlsx', sheet_name='Sheet1', index = False)
 
 if __name__ == "__main__":
     main()

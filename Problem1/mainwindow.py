@@ -178,7 +178,7 @@ class Ui_MainWindow(object):
         self.verticalLayout.addItem(spacerItem1)
         self.label_2 = QtWidgets.QLabel(self.centralwidget)
         self.label_2.setText("")
-        self.label_2.setPixmap(QtGui.QPixmap("covid.jpg"))
+        self.label_2.setPixmap(QtGui.QPixmap("Images/covid.jpg"))
         self.label_2.setObjectName("label_2")
         self.verticalLayout.addWidget(self.label_2)
         spacerItem2 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
