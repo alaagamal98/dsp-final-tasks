@@ -1,40 +1,103 @@
 from PyQt5 import QtWidgets
+from scipy.sparse import dia_matrix
 from mainwindow import Ui_MainWindow
 import sys
 import numpy as np
+import pandas as pd
 from scipy.io import wavfile
 from os import path
 from pydub import AudioSegment
+from mdp import fastica
 import os
-
+import scipy
+from sklearn.datasets import load_digits
+from sklearn.decomposition import FastICA
+from sklearn import preprocessing
+# np.set_printoptions(threshold=sys.maxsize)
 
 class ApplicationWindow(QtWidgets.QMainWindow):
     def __init__(self):
         super(ApplicationWindow, self).__init__()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
-        self.ui.pushButton.clicked.connect(self.getfile)
+        self.ui.opensong.clicked.connect(self.getfile)
+        self.ui.splitsong.clicked.connect(self.splitSong)
+        self.ui.splitcomp.clicked.connect(self.splitComp)
+        
     def getfile(self):
         path,extention = QtWidgets.QFileDialog.getOpenFileName(self,"QFileDialog.getOpenFileName()", "",
-            "(*.mp3);;(*.wav) ")
+            "(*.mp3);;(*.csv);;(*.wav) ")
         self.head,self.filename = os.path.split(path)
         self.wavFile = self.head+'/'+self.filename[:-4] + '.wav'
         if(path!=''):
-
-            self.read_file(path) 
-
+            self.read_file(path,extention) 
         else:
             pass 
-    def read_file(self,path,i):
-        sound = AudioSegment.from_mp3(path)
-        sound.export(self.wavFile , format="wav")  
-        self.samplerate, self.data[i] = wavfile.read(self.wavFile)
-        if(len(self.data[i].shape)==2):
-            if (self.data[i].shape[1]==2):
-                self.data[i]  = np.mean(self.data[i], axis=1)
-               
+    def read_file(self,path,ext):
+        if ext == "(*.mp3)":
+            sound = AudioSegment.from_mp3(path)
+            sound.export(self.wavFile , format="wav")  
+            self.samplerate, self.data = wavfile.read(self.wavFile)
+        elif ext ==  "(*.wav)":   
+            self.samplerate, self.data = wavfile.read(path)
+        elif ext ==  "(*.csv)":     
+            self.data = pd.read_csv(path)  
+            #convert data frame into list of lists
+            dataset = self.data.values.tolist()
+            #convert list of list into list
+            self.data = [j for i in dataset for j in i]
+
+    def splitSong (self):
+        transformer = FastICA(n_components=2)
+        X_transformed = transformer.fit_transform(self.data)
+        print(X_transformed.shape)
+        transpose = np.transpose(X_transformed)
+        if(len(self.data.shape)==2):
+            if(self.data.shape[1]==2):
+                plotting_data = np.mean(self.data, axis=1) 
+        plotting_data /= abs(plotting_data).max(axis = 0) 
+        transpose[0] /= abs(transpose[0]).max(axis = 0)
+        transpose[1] /= abs(transpose[1]).max(axis = 0)
+        sample_length = transpose[0].shape[0] 
+        time = np.arange(sample_length) / self.samplerate
+        self.ui.songdata.plot(time, plotting_data, pen='g')
+        self.ui.songdata.plot(time, transpose[1], pen='r')
+        self.ui.songdata.plot(time,transpose[0], pen='b')
 
 
+        wavfile.write('music.wav', self.samplerate, transpose[0])
+        wavfile.write('vocal.wav', self.samplerate, transpose[1])
+        
+
+    def splitComp(self):
+        sr1 , data1 = wavfile.read("mixed1.wav")
+        sr2 , data2 = wavfile.read("mixed2.wav")
+        sr3 , data3 = wavfile.read("mixed3.wav")
+        data1 = data1.transpose()
+        data2 = data2.transpose()
+        data3 = data3.transpose()
+        mixed = np.array([data1[0],data2[0],data3[0],data1[1],data2[1],data3[1]])
+        mixed = mixed.transpose()
+        if(mixed.shape[1]>2):
+            original_data = np.mean(mixed, axis=1) 
+        transformer = FastICA(n_components=3,whiten=True,max_iter=2000, tol=0.0001, fun='exp')
+        X_transformed = transformer.fit_transform(mixed)
+        X_transformed = X_transformed.transpose()
+        original_data /= abs(original_data).max(axis = 0) 
+        X_transformed[0] /= abs(X_transformed[0]).max(axis = 0)
+        X_transformed[1] /= abs(X_transformed[1]).max(axis = 0)
+        X_transformed[2] /= abs(X_transformed[2]).max(axis = 0)
+        wavfile.write('out1.wav', sr1, X_transformed[0])
+        wavfile.write('out2.wav', sr1, X_transformed[1])
+        wavfile.write('out3.wav', sr1, X_transformed[2])
+        sample_length = X_transformed[0].shape[0] 
+        time = np.arange(sample_length) / sr1
+        self.ui.original.plot(time,original_data,pen = 'y')
+        self.ui.comp1.plot(time,X_transformed[0], pen = "r")
+        self.ui.comp2.plot(time,X_transformed[1], pen = "b")
+        self.ui.comp3.plot(time,X_transformed[2], pen = "g")
+
+    
 def main():
     app = QtWidgets.QApplication(sys.argv)
     application = ApplicationWindow()
