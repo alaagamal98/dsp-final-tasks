@@ -15,23 +15,23 @@ class MyWindow(QtWidgets.QMainWindow):
     
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
-        self.ui.FirstBubbleButton.clicked.connect(self.FirstBubbleGraph)
+        self.ui.FirstBubbleButton.clicked.connect(self.DailyBubbleGraph)
         self.ui.MapsButton.clicked.connect(self.MapsGraph)
         self.ui.SortedButton.clicked.connect(self.SortedGraph)
-        self.ui.SecondBubbleButton.clicked.connect(self.SecondBubbleGraph)
+        self.ui.SecondBubbleButton.clicked.connect(self.AccumulatedBubbleGraph)
         self.data = pd.read_excel('Database/PreProcessedCOVID-19.xlsx', sheet_name='Sheet1')
         self.dataAccumulated = pd.read_excel('Database/PreProcessedCOVID-19(Accumulated).xlsx', sheet_name='Sheet1')
         self.data['date']=self.data['date'].dt.strftime('%Y-%m-%d')
         self.dataAccumulated['date']=self.dataAccumulated['date'].dt.strftime('%Y-%m-%d')
 
-    def FirstBubbleGraph(self):
+    def DailyBubbleGraph(self):
         fig = px.scatter(self.data,x="deaths", y="recovered",animation_frame="date", animation_group="country",
             color="continent", 
              size="cases", 
               hover_name="country", 
               range_x=[1,3000]
               ,range_y=[-500,10000],log_x=True, size_max=200)
-        fileName="FirstBubbleGraph.html"
+        fileName="DailyBubbleGraph.html"
         fig.write_html("Graphs/"+fileName)
         self.setupGraph(fileName)
         self.Graph.show()
@@ -62,14 +62,14 @@ class MyWindow(QtWidgets.QMainWindow):
         self.setupGraph(fileName)
         self.Graph.show()
 
-    def SecondBubbleGraph(self):
+    def AccumulatedBubbleGraph(self):
         fig = px.scatter(self.dataAccumulated,x="deaths", y="recovered",animation_frame="date", animation_group="country",
             color="continent", 
              size="cases", 
               hover_name="country",
               range_x=[1,60000]
               ,range_y=[-500,120000],log_x=True, size_max=200)
-        fileName="SecondBubbleGraph.html"
+        fileName="AccumulatedBubbleGraph.html"
         fig.write_html("Graphs/"+fileName)
         self.setupGraph(fileName)
         self.Graph.show()
