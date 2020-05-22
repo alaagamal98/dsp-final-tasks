@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1212</width>
-    <height>938</height>
+    <width>1218</width>
+    <height>997</height>
    </rect>
   </property>
   <property name="palette">
@@ -797,7 +797,7 @@
            </font>
           </property>
           <property name="text">
-           <string>First Animated Bubble Graph</string>
+           <string>Daily Animated Bubble Graph</string>
           </property>
           <property name="autoRepeat">
            <bool>false</bool>
@@ -1005,7 +1005,7 @@
            </font>
           </property>
           <property name="text">
-           <string>Second Animated Bubble Graph</string>
+           <string>Overall Animated Bubble Graph (Accumulated)</string>
           </property>
           <property name="autoRepeat">
            <bool>false</bool>
@@ -1201,7 +1201,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1212</width>
+     <width>1218</width>
      <height>26</height>
     </rect>
    </property>

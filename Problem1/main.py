@@ -7,6 +7,7 @@ from pandas import ExcelWriter
 from pandas import ExcelFile
 import os
 import sys
+from ipywidgets import widgets
 
 class MyWindow(QtWidgets.QMainWindow):
     def __init__(self):
@@ -19,8 +20,10 @@ class MyWindow(QtWidgets.QMainWindow):
         self.ui.SortedButton.clicked.connect(self.SortedGraph)
         self.ui.SecondBubbleButton.clicked.connect(self.SecondBubbleGraph)
         self.data = pd.read_excel('Database/PreProcessedCOVID-19.xlsx', sheet_name='Sheet1')
+        self.dataAccumulated = pd.read_excel('Database/PreProcessedCOVID-19(Accumulated).xlsx', sheet_name='Sheet1')
         self.data['date']=self.data['date'].dt.strftime('%Y-%m-%d')
-        
+        self.dataAccumulated['date']=self.dataAccumulated['date'].dt.strftime('%Y-%m-%d')
+
     def FirstBubbleGraph(self):
         fig = px.scatter(self.data,x="deaths", y="recovered",animation_frame="date", animation_group="country",
             color="continent", 
@@ -36,9 +39,8 @@ class MyWindow(QtWidgets.QMainWindow):
     def MapsGraph(self):
 
         fig = px.choropleth(self.data, hover_name="country", color="cases",
-                           range_color=(0, 5000),
+                        range_color=(0, 5000),
                             locations="countryterritoryCode",color_continuous_scale=px.colors.sequential.Plasma,animation_frame="date", animation_group="country")
-
         fileName="MapsGraph.html"
         fig.write_html("Graphs/"+fileName)
         self.setupGraph(fileName)
@@ -61,12 +63,12 @@ class MyWindow(QtWidgets.QMainWindow):
         self.Graph.show()
 
     def SecondBubbleGraph(self):
-        fig = px.scatter(self.data,x="deaths", y="recovered",animation_frame="date", animation_group="country",
+        fig = px.scatter(self.dataAccumulated,x="deaths", y="recovered",animation_frame="date", animation_group="country",
             color="continent", 
              size="cases", 
               hover_name="country",
-              range_x=[1,3000]
-              ,range_y=[-500,10000],log_x=True, size_max=200)
+              range_x=[1,60000]
+              ,range_y=[-500,120000],log_x=True, size_max=200)
         fileName="SecondBubbleGraph.html"
         fig.write_html("Graphs/"+fileName)
         self.setupGraph(fileName)
