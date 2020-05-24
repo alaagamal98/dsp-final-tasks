@@ -593,6 +593,10 @@
           </property>
          </widget>
         </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
         <item>
          <widget class="QLabel" name="Image5">
           <property name="frameShape">
@@ -609,10 +613,6 @@
           </property>
          </widget>
         </item>
-       </layout>
-      </item>
-      <item>
-       <layout class="QHBoxLayout" name="horizontalLayout_2">
         <item>
          <widget class="QLabel" name="Image6">
           <property name="frameShape">
@@ -661,38 +661,6 @@
           </property>
          </widget>
         </item>
-        <item>
-         <widget class="QLabel" name="Image9">
-          <property name="frameShape">
-           <enum>QFrame::Box</enum>
-          </property>
-          <property name="frameShadow">
-           <enum>QFrame::Raised</enum>
-          </property>
-          <property name="lineWidth">
-           <number>1</number>
-          </property>
-          <property name="text">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLabel" name="Image10">
-          <property name="frameShape">
-           <enum>QFrame::Box</enum>
-          </property>
-          <property name="frameShadow">
-           <enum>QFrame::Raised</enum>
-          </property>
-          <property name="lineWidth">
-           <number>1</number>
-          </property>
-          <property name="text">
-           <string/>
-          </property>
-         </widget>
-        </item>
        </layout>
       </item>
      </layout>
@@ -705,7 +673,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>26</height>
+     <height>22</height>
     </rect>
    </property>
   </widget>
