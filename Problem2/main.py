@@ -27,9 +27,6 @@ class MyWindow(QtWidgets.QMainWindow):
             self.decodeImage(imgPath[0])
 
     def decodeImage(self,path):
-        pixmap = QtGui.QPixmap(path)
-        self.images[0].setPixmap(pixmap)
-        self.images[0].setScaledContents(True)
         markers= self.markerIndex('ffda')
         for i in range (8):
             imgByte=open(path,"rb").read(markers[i+1])
@@ -40,7 +37,7 @@ class MyWindow(QtWidgets.QMainWindow):
             outputImage=QtGui.QImage(output)
             self.pixmapImage=QtGui.QPixmap.fromImage(outputImage).scaled(250,250)            
             self.images[i].setPixmap(self.pixmapImage)
-
+            self.images[i].setScaledContents(True)
     def huffmanTable(self):
         length=[]   
         valuesLegnth=[]
