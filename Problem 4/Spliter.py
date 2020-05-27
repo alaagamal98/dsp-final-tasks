@@ -23,9 +23,11 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         super(ApplicationWindow, self).__init__()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
+        self.data =[]
         self.ui.opensong.clicked.connect(self.getfile)
         self.ui.splitsong.clicked.connect(self.splitSong)
-        self.ui.splitcomp.clicked.connect(self.splitComp)
+        self.ui.cocktailparty.clicked.connect(self.CocktailPartyFile)
+        self.ui.ecg.clicked.connect(self.ecgFile)
 
     def getfile(self):
         path, extention = QtWidgets.QFileDialog.getOpenFileName(self, "QFileDialog.getOpenFileName()", "",
@@ -44,99 +46,89 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             self.samplerate, self.data = wavfile.read(self.wavFile)
         elif ext == "(*.wav)":
             self.samplerate, self.data = wavfile.read(path)
-            print(self.data.dtype)
-        elif ext == "(*.csv)":
-            self.data = pd.read_csv(path)
-            # convert data frame into list of lists
-            dataset = self.data.values.tolist()
-            # convert list of list into list
-            self.data = [j for i in dataset for j in i]
-
+        
     def splitSong(self):
-        # FastICA
-        transformer = FastICA(n_components=2)
-        X_transformed = transformer.fit_transform(self.data)
-        transpose = np.transpose(X_transformed)
-        if(self.data.shape[1] >= 2):
-            plotting_data = np.mean(self.data, axis=1)
-        plotting_data /= abs(plotting_data).max(axis=0)
-        transpose[0] /= abs(transpose[0]).max(axis=0)
-        transpose[1] /= abs(transpose[1]).max(axis=0)
-        sample_length = transpose[0].shape[0]
-        time = np.arange(sample_length) / self.samplerate
-        self.ui.songdata.plot(time, plotting_data, pen='g')
-        self.ui.songdata.plot(time, transpose[1], pen='r')
-        self.ui.songdata.plot(time, transpose[0], pen='b')
-        wavfile.write('music.wav', self.samplerate, transpose[0])
-        wavfile.write('vocal.wav', self.samplerate, transpose[1])
-        # librosa
-        # if(self.data.shape[1]>=2):
-        #     plotting_data = np.mean(self.data, axis=1)
-        # print(plotting_data)
-        # S_full, phase = librosa.magphase(librosa.stft(plotting_data))
-        # # print(S_full)
-        # S_filter = librosa.decompose.nn_filter(S_full,
-        #                                     aggregate=np.median,
-        #                                     metric='cosine',
-        #                                     width=int(librosa.time_to_frames(2, sr=self.samplerate)))
-        # S_filter = np.minimum(S_full, S_filter)
-        # margin_i, margin_v = 2, 10
-        # power = 2
-        # mask_i = librosa.util.softmask(S_filter,
-        #                        margin_i * (S_full - S_filter),
-        #                        power=power)
-        # mask_v = librosa.util.softmask(S_full - S_filter,
-        #                        margin_v * S_filter,
-        #                        power=power)
-        # S_foreground = mask_v * S_full
-        # S_background = mask_i * S_full
-        # back = librosa.istft(S_background)
-        # fore = librosa.istft(S_foreground)
-        # back_last= np.array(back,dtype= np.int16)
-        # fore_last= np.array(fore,dtype= np.int16)
-        # plotting_data /= abs(plotting_data).max(axis = 0)
-        # back /= abs(back).max(axis = 0)
-        # fore /= abs(fore).max(axis = 0)
-        # print(back_last)
-        # print(fore_last)
-        # sample_length = plotting_data.shape[0]
-        # time = np.arange(sample_length) / self.samplerate
-        # self.ui.songdata.plot(time, plotting_data, pen='g')
-        # self.ui.songdata.plot(time,back, pen='b')
-        # self.ui.songdata.plot(time, fore, pen='r')
-        # wavfile.write('musicLibrosa.wav', self.samplerate, back_last)
-        # wavfile.write('vocalLibrosa.wav', self.samplerate, fore_last)
-        # print("zhe2t")
+        if self.data!=[]:
+            # FastICA
+            transformer = FastICA(n_components=2)
+            X_transformed = transformer.fit_transform(self.data)
+            transpose = np.transpose(X_transformed)
+            if(self.data.shape[1] >= 2):
+                plotting_data = np.mean(self.data, axis=1)
+            plotting_data /= abs(plotting_data).max(axis=0)
+            transpose[0] /= abs(transpose[0]).max(axis=0)
+            transpose[1] /= abs(transpose[1]).max(axis=0)
+            self.ui.songdata.plot(plotting_data, pen='g')
+            self.ui.sep1.plot(transpose[0], pen='b')
+            self.ui.sep2.plot(transpose[1], pen='r')
+            wavfile.write('SeparatedFile1.wav', self.samplerate, transpose[0])
+            wavfile.write('SeparatedFile2.wav', self.samplerate, transpose[1])    
+            # librosa
+            # if(self.data.shape[1]>=2):
+            #     plotting_data = np.mean(self.data, axis=1) 
+            # S_full, phase = librosa.magphase(librosa.stft(plotting_data))
+            # S_filter = librosa.decompose.nn_filter(S_full,
+            #                                aggregate=np.median,
+            #                                metric='cosine',
+            #                                width=int(librosa.time_to_frames(2, sr=self.samplerate)))
+            # S_filter = np.minimum(S_full, S_filter)
+            # margin_i, margin_v = 2, 10
+            # power = 2
+            # mask_i = librosa.util.softmask(S_filter,
+            #                        margin_i * (S_full - S_filter),
+            #                        power=power)
+            # mask_v = librosa.util.softmask(S_full - S_filter,
+            #                        margin_v * S_filter,
+            #                        power=power)
+            # S_foreground = mask_v * S_full
+            # S_background = mask_i * S_full
+            # back = librosa.istft(S_background)
+            # fore = librosa.istft(S_foreground)
+            # back_last= np.array(back,dtype= np.int16)
+            # fore_last= np.array(fore,dtype= np.int16)
+            # plotting_data /= abs(plotting_data).max(axis = 0)
+            # back /= abs(back).max(axis = 0)
+            # fore /= abs(fore).max(axis = 0)
+            # print(plotting_data)
+            # self.ui.songdata.plot( plotting_data, pen='g')
+            # self.ui.sep1.plot(back, pen='b')
+            # self.ui.sep2.plot( fore, pen='r')
+            # wavfile.write('SeparatedFile1.wav', self.samplerate, back_last)
+            # wavfile.write('SeparatedFile2.wav', self.samplerate, fore_last)
+        else :
+            pass    
 
-    def splitComp(self):
+    def CocktailPartyFile(self):
         sr , data = wavfile.read("CocktailParty.wav")
-        ica = FastICA(n_components=4)
+        ica = FastICA(n_components=2)
         ica.fit(data)
         S_ = ica.transform(data)
-        print(S_)
         if(data.shape[1] >= 2):
             original_data = np.mean(data, axis=1)
-        print("KOKO")    
-        print(original_data)    
         
         S_[:, 0] /= abs(S_[:, 0]).max(axis=0)
         S_[:, 1] /= abs(S_[:, 1]).max(axis=0)
-        S_[:, 2] /= abs(S_[:, 2]).max(axis=0)
-        S_[:, 3] /= abs(S_[:, 3]).max(axis=0)
-        print(S_[:, 0]) 
         wavfile.write("Source1.wav",sr,S_[:, 0])
         wavfile.write("Source2.wav",sr,S_[:, 1])
-        wavfile.write("Source3.wav",sr,S_[:, 2])
-        wavfile.write("Source4.wav",sr,S_[:, 3])
         transpose = np.transpose(S_)
         sample_length = transpose[0].shape[0]
-        # print(sample_length)
         time = np.arange(sample_length) / sr
-        # print(time)
         self.ui.original.plot(time,original_data, pen='y')
         self.ui.comp1.plot(time, S_[:, 0], pen='r')
         self.ui.comp2.plot(time,S_[:, 1], pen='b')
-        self.ui.comp3.plot(time, S_[:, 2], pen='g')
+        # self.ui.comp3.plot(time, S_[:, 2], pen='g')
+
+    def ecgFile(self):
+        data = pd.read_csv("115.csv")
+        data = data.iloc[0:1000,1:3] 
+        ica = FastICA(n_components=2)
+        ica.fit(data)
+        S_ = ica.transform(data)   
+        if(data.shape[1] >= 2):
+            original_data = np.mean(data, axis=1)
+        self.ui.original.plot(original_data, pen='y')
+        self.ui.comp1.plot(S_[:, 0], pen='r')
+        self.ui.comp2.plot(S_[:, 1], pen='b')
 
 def main():
     app = QtWidgets.QApplication(sys.argv)
