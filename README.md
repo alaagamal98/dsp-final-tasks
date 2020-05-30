@@ -21,7 +21,24 @@
 
 ```conda env create -f condaEnvironments/environmentUbuntu.yml```
 
-4. *Run This Command*
+3. *Activate The Environment*
+* If you are running problem one, run this command: 
+
+```conda activate problem1```
+
+* If you are running problem two, run this command: 
+
+```conda activate problem2```
+
+* If you are running problem three, run this command: 
+
+```conda activate problem3```
+
+* If you are running problem four, run this command: 
+
+```conda activate problem4```
+
+5. *Run This Command*
 
 ```python main.py```
 
