@@ -7,7 +7,6 @@ from pandas import ExcelWriter
 from pandas import ExcelFile
 import os
 import sys
-from ipywidgets import widgets
 
 class MyWindow(QtWidgets.QMainWindow):
     def __init__(self):
