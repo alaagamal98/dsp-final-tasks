@@ -21,7 +21,7 @@
 
 ```conda env create -f condaEnvironments/environmentUbuntu.yml```
 
-3. *Activate The Environment*
+4. *Activate The Environment*
 * If you are running problem one, run this command: 
 
 ```conda activate problem1```
