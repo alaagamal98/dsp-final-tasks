@@ -1,15 +1,11 @@
-from math import log2, pow
 from scipy.io.wavfile import write
 import wave  
-# from soundPiano import soundPiano
 import numpy as np
 from choose import Ui_MainWindow
 from PyQt5 import QtWidgets
 import sys
 from pydub import AudioSegment
 from pydub.playback import play
-import pygame
-from time import sleep
 import pyaudio
 from Guitar import Ui_MainWindow as Ui_MainWindow1
 from piano import Ui_MainWindow as Ui_MainWindow2

@@ -1,19 +1,14 @@
 from PyQt5 import QtWidgets
-from scipy.sparse import dia_matrix
 from mainwindow import Ui_MainWindow
 import sys
 import numpy as np
 import pandas as pd
-from scipy import signal
 from scipy.io import wavfile
 from os import path
 from pydub import AudioSegment
-from mdp import fastica
 import os
 import scipy
-from sklearn.datasets import load_digits
 from sklearn.decomposition import FastICA
-from sklearn import preprocessing
 import librosa
 # np.set_printoptions(threshold=sys.maxsize)
 
