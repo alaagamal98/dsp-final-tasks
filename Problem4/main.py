@@ -10,7 +10,6 @@ import os
 import scipy
 from sklearn.decomposition import FastICA
 import librosa
-# np.set_printoptions(threshold=sys.maxsize)
 
 
 class ApplicationWindow(QtWidgets.QMainWindow):

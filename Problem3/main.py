@@ -67,7 +67,6 @@ class ApplicationWindow(QtWidgets.QMainWindow):
     def soundPiano(self,pianoBtn):
         
         for key, value in self.frequancies[pianoBtn].items():
-            print(value)
             data = self.PianoData(1,value)
             scaled = np.int16(data/np.max(np.abs(data)) * 32767)
             self.playSound(scaled,pyaudio.paInt16)

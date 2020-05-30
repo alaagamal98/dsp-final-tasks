@@ -10,7 +10,7 @@ class MyWindow(QtWidgets.QMainWindow):
         self.ui.setupUi(self)
         self.ui.Browse.clicked.connect(self.openImage)
         self.images =[self.ui.Image1,self.ui.Image2,self.ui.Image3,self.ui.Image4,self.ui.Image5,self.ui.Image6,self.ui.Image7,self.ui.Image8]
-        self.firstNibble=[]
+        self.upNibble=[]
         self.markers=[]
         self.huffDC=[0]*4
         self.huffAC=[0]*8
@@ -27,6 +27,9 @@ class MyWindow(QtWidgets.QMainWindow):
             self.decodeImage(imgPath[0])
 
     def decodeImage(self,path):
+        pixmap = QtGui.QPixmap(path)
+        self.images[0].setPixmap(pixmap)
+        self.images[0].setScaledContents(True)
         markers= self.markerIndex('ffda')
         for i in range (8):
             imgByte=open(path,"rb").read(markers[i+1])
@@ -35,40 +38,38 @@ class MyWindow(QtWidgets.QMainWindow):
             outputData.write(imgByte)
             outputData.close()
             outputImage=QtGui.QImage(output)
-            self.pixmapImage=QtGui.QPixmap.fromImage(outputImage).scaled(250,250)            
+            self.pixmapImage=QtGui.QPixmap.fromImage(outputImage)           
             self.images[i].setPixmap(self.pixmapImage)
-            self.images[i].setScaledContents(True)
-            
+
     def huffmanTable(self):
         length=[]   
-        byteSymbol=[]
+        valuesLegnth=[]
+        byteSymbols=[]
         ACid=[]
-        valuesLen=[]
-
         for m in range (8):
             ACid.append(m)
         self.markers=self.markerIndex("ffc4")
         for i in range (len(self.markers)):
             byteOffset=[]
             x=list(self.data[self.markers[i]+4])
-            self.firstNibble.append(x[0])
+            self.upNibble.append(x[0])
             self.id.append(x[1])
             y=int(self.data[self.markers[i]+2]+self.data[self.markers[i]+3],16)
             length.append(y)
             for j in range (16):
                offset=int(self.data[self.markers[i]+5+j],16) 
                byteOffset.append(offset)
-            valuesLen.append(byteOffset[15])
+            valuesLegnth.append(byteOffset[15])
             currentIndex=self.markers[i]+21
-            subSymbol = []
+            subSymbols = []
             for k in range (16):    
-                subSymbol.append(self.data[currentIndex:currentIndex+byteOffset[k]])
+                subSymbols.append(self.data[currentIndex:currentIndex+byteOffset[k]])
                 currentIndex+=byteOffset[k]
-            byteSymbol.append(subSymbol)
-            if (self.firstNibble[i]=='0'):
-                self.huffDC[int(self.id[i])]=byteSymbol[i]
-            elif(self.firstNibble[i]=='1'):
-                self.huffAC[ACid[i-2]]=byteSymbol[i]
+            byteSymbols.append(subSymbols)
+            if (self.upNibble[i]=='0'):
+                self.huffDC[int(self.id[i])]=byteSymbols[i]
+            elif(self.upNibble[i]=='1'):
+                self.huffAC[ACid[i-2]]=byteSymbols[i]
 
     def markerIndex(self,marker):
         index=[]
