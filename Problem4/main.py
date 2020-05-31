@@ -140,7 +140,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             self.ui.comp2.plot(clear = True)
         elif self.firstTime == 0:
             self.firstTime = 1 
-        data = pd.read_csv("Data/115.csv")
+        data = pd.read_csv("Data/ECG.csv")
         data = data.iloc[0:1000,1:3] 
         ica = FastICA(n_components=2)
         ica.fit(data)
