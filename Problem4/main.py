@@ -56,7 +56,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
                 self.firstSongToSplit = 0  
             if(self.data.shape[1]>=2):
                 plotting_data = np.mean(self.data, axis=1) 
-            S_full, = librosa.magphase(librosa.stft(plotting_data))
+            S_full,phase = librosa.magphase(librosa.stft(plotting_data))
             S_filter = librosa.decompose.nn_filter(S_full,
                                            aggregate=np.median,
                                            metric='cosine',
@@ -82,8 +82,8 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             self.ui.songdata.plot( plotting_data, pen='g')
             self.ui.sep1.plot(back, pen='b')
             self.ui.sep2.plot( fore, pen='r')
-            wavfile.write('SeparatedFile1.wav', self.samplerate, back_last)
-            wavfile.write('SeparatedFile2.wav', self.samplerate, fore_last)
+            wavfile.write('SeparatedSong1.wav', self.samplerate, back_last)
+            wavfile.write('SeparatedSong2.wav', self.samplerate, fore_last)
           
 
     def CocktailPartyFile(self):
@@ -105,10 +105,10 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         S_[:, 1] /= abs(S_[:, 1]).max(axis=0)
         S_[:, 2] /= abs(S_[:, 2]).max(axis=0)
         S_[:, 3] /= abs(S_[:, 3]).max(axis=0)
-        wavfile.write("Source1.wav",sr,S_[:, 0])
-        wavfile.write("Source2.wav",sr,S_[:, 1])
-        wavfile.write("Source3.wav",sr,S_[:, 2])
-        wavfile.write("Source4.wav",sr,S_[:, 3])
+        wavfile.write("CocktailSource1.wav",sr,S_[:, 0])
+        wavfile.write("CocktailSource2.wav",sr,S_[:, 1])
+        wavfile.write("CocktailSource3.wav",sr,S_[:, 2])
+        wavfile.write("CocktailSource4.wav",sr,S_[:, 3])
         transpose = np.transpose(S_)
         sample_length = transpose[0].shape[0]
         time = np.arange(sample_length) / sr
