@@ -91,6 +91,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             self.ui.original.plot(clear = True)
             self.ui.comp1.plot (clear = True)
             self.ui.comp2.plot(clear = True)
+            self.ui.comp3.plot(clear = True)
         elif self.firstTime == 0:
             self.firstTime = 1     
         sr , data = wavfile.read("Data/CocktailParty.wav")
@@ -121,6 +122,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             self.ui.original.plot(clear = True)
             self.ui.comp1.plot (clear = True)
             self.ui.comp2.plot(clear = True)
+            self.ui.comp3.plot(clear = True)
         elif self.firstTime == 0:
             self.firstTime = 1 
         data = pd.read_csv("Data/ECG.csv")
