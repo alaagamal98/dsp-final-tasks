@@ -24,4 +24,4 @@ We press open file first to choose the song we want
 
 Then we press song split to split it to two diffrent file one contain the word and one contain the music "it should be" 
 
-The two file is SeparatedFile1 and SeparatedFile2
+The two file is SeparatedSong1 and SeparatedSong2
