@@ -47,64 +47,43 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         if  len(self.data)==0:
             pass
         else :
-            # FastICA
-            if self.firstSongToSplit == 0 :
-                self.ui.songdata.plot(clear = True)
-                self.ui.sep1.plot (clear = True)
-                self.ui.sep2.plot(clear = True)
-            elif self.firstSongToSplit == 1:
-                self.firstSongToSplit = 0     
-            transformer = FastICA(n_components=2)
-            X_transformed = transformer.fit_transform(self.data)
-            transpose = np.transpose(X_transformed)
-            if(self.data.shape[1] >= 2):
-                plotting_data = np.mean(self.data, axis=1)
-            plotting_data /= abs(plotting_data).max(axis=0)
-            transpose[0] /= abs(transpose[0]).max(axis=0)
-            transpose[1] /= abs(transpose[1]).max(axis=0)
-            self.ui.songdata.plot(plotting_data, pen='g')
-            self.ui.sep1.plot(transpose[0], pen='b')
-            self.ui.sep2.plot(transpose[1], pen='r')
-            wavfile.write('SeparatedFile1.wav', self.samplerate, transpose[0])
-            wavfile.write('SeparatedFile2.wav', self.samplerate, transpose[1])    
             # librosa
-            # if self.firstSongToSplit == 0 :
-            #     self.ui.original.plot(clear = True)
-            #     self.ui.comp1.plot (clear = True)
-            #     self.ui.comp2.plot(clear = True)
-            # elif self.firstSongToSplit == 1:
-            #     self.firstSongToSplit = 0  
-            # if(self.data.shape[1]>=2):
-            #     plotting_data = np.mean(self.data, axis=1) 
-            # S_full, phase = librosa.magphase(librosa.stft(plotting_data))
-            # S_filter = librosa.decompose.nn_filter(S_full,
-            #                                aggregate=np.median,
-            #                                metric='cosine',
-            #                                width=int(librosa.time_to_frames(2, sr=self.samplerate)))
-            # S_filter = np.minimum(S_full, S_filter)
-            # margin_i, margin_v = 2, 10
-            # power = 2
-            # mask_i = librosa.util.softmask(S_filter,
-            #                        margin_i * (S_full - S_filter),
-            #                        power=power)
-            # mask_v = librosa.util.softmask(S_full - S_filter,
-            #                        margin_v * S_filter,
-            #                        power=power)
-            # S_foreground = mask_v * S_full
-            # S_background = mask_i * S_full
-            # back = librosa.istft(S_background)
-            # fore = librosa.istft(S_foreground)
-            # back_last= np.array(back,dtype= np.int16)
-            # fore_last= np.array(fore,dtype= np.int16)
-            # plotting_data /= abs(plotting_data).max(axis = 0)
-            # back /= abs(back).max(axis = 0)
-            # fore /= abs(fore).max(axis = 0)
-            # print(plotting_data)
-            # self.ui.songdata.plot( plotting_data, pen='g')
-            # self.ui.sep1.plot(back, pen='b')
-            # self.ui.sep2.plot( fore, pen='r')
-            # wavfile.write('SeparatedFile1.wav', self.samplerate, back_last)
-            # wavfile.write('SeparatedFile2.wav', self.samplerate, fore_last)
+            if self.firstSongToSplit == 0 :
+                self.ui.original.plot(clear = True)
+                self.ui.comp1.plot (clear = True)
+                self.ui.comp2.plot(clear = True)
+            elif self.firstSongToSplit == 1:
+                self.firstSongToSplit = 0  
+            if(self.data.shape[1]>=2):
+                plotting_data = np.mean(self.data, axis=1) 
+            S_full, = librosa.magphase(librosa.stft(plotting_data))
+            S_filter = librosa.decompose.nn_filter(S_full,
+                                           aggregate=np.median,
+                                           metric='cosine',
+                                           width=int(librosa.time_to_frames(2, sr=self.samplerate)))
+            S_filter = np.minimum(S_full, S_filter)
+            margin_i, margin_v = 2, 10
+            power = 2
+            mask_i = librosa.util.softmask(S_filter,
+                                   margin_i * (S_full - S_filter),
+                                   power=power)
+            mask_v = librosa.util.softmask(S_full - S_filter,
+                                   margin_v * S_filter,
+                                   power=power)
+            S_foreground = mask_v * S_full
+            S_background = mask_i * S_full
+            back = librosa.istft(S_background)
+            fore = librosa.istft(S_foreground)
+            back_last= np.array(back,dtype= np.int16)
+            fore_last= np.array(fore,dtype= np.int16)
+            plotting_data /= abs(plotting_data).max(axis = 0)
+            back /= abs(back).max(axis = 0)
+            fore /= abs(fore).max(axis = 0)
+            self.ui.songdata.plot( plotting_data, pen='g')
+            self.ui.sep1.plot(back, pen='b')
+            self.ui.sep2.plot( fore, pen='r')
+            wavfile.write('SeparatedFile1.wav', self.samplerate, back_last)
+            wavfile.write('SeparatedFile2.wav', self.samplerate, fore_last)
           
 
     def CocktailPartyFile(self):
@@ -115,7 +94,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         elif self.firstTime == 0:
             self.firstTime = 1     
         sr , data = wavfile.read("Data/CocktailParty.wav")
-        ica = FastICA(n_components=2)
+        ica = FastICA(n_components=4)
         ica.fit(data)
         S_ = ica.transform(data)
         if(data.shape[1] >= 2):
@@ -123,15 +102,19 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         
         S_[:, 0] /= abs(S_[:, 0]).max(axis=0)
         S_[:, 1] /= abs(S_[:, 1]).max(axis=0)
+        S_[:, 2] /= abs(S_[:, 2]).max(axis=0)
+        S_[:, 3] /= abs(S_[:, 3]).max(axis=0)
         wavfile.write("Source1.wav",sr,S_[:, 0])
         wavfile.write("Source2.wav",sr,S_[:, 1])
+        wavfile.write("Source3.wav",sr,S_[:, 2])
+        wavfile.write("Source4.wav",sr,S_[:, 3])
         transpose = np.transpose(S_)
         sample_length = transpose[0].shape[0]
         time = np.arange(sample_length) / sr
         self.ui.original.plot(time,original_data, pen='y')
         self.ui.comp1.plot(time, S_[:, 0], pen='r')
         self.ui.comp2.plot(time,S_[:, 1], pen='b')
-        # self.ui.comp3.plot(time, S_[:, 2], pen='g')
+        self.ui.comp3.plot(time, S_[:, 2], pen='g')
 
     def ecgFile(self):
         if self.firstTime == 1 :

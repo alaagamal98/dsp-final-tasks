@@ -14,11 +14,11 @@ Using the ica Library
 
 When we press on CocktailParty split the file i download will be drawn on the first PlotWidget
 
-Two files will be generated to listen to the two original sources
+four files will be generated to listen to the 4 original sources
 
 ## - Song Spliting
 
-Using The 
+Using The Librosa
 
 We press open file first to choose the song we want 
 
