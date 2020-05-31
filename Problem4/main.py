@@ -18,6 +18,8 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         self.data =[]
+        self.firstSongToSplit = 1
+        self.firstTime = 0
         self.ui.opensong.clicked.connect(self.getfile)
         self.ui.splitsong.clicked.connect(self.splitSong)
         self.ui.cocktailparty.clicked.connect(self.CocktailPartyFile)
@@ -42,8 +44,16 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             self.samplerate, self.data = wavfile.read(path)
         
     def splitSong(self):
-        if self.data!=[]:
+        if  len(self.data)==0:
+            pass
+        else :
             # FastICA
+            if self.firstSongToSplit == 0 :
+                self.ui.songdata.plot(clear = True)
+                self.ui.sep1.plot (clear = True)
+                self.ui.sep2.plot(clear = True)
+            elif self.firstSongToSplit == 1:
+                self.firstSongToSplit = 0     
             transformer = FastICA(n_components=2)
             X_transformed = transformer.fit_transform(self.data)
             transpose = np.transpose(X_transformed)
@@ -58,6 +68,12 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             wavfile.write('SeparatedFile1.wav', self.samplerate, transpose[0])
             wavfile.write('SeparatedFile2.wav', self.samplerate, transpose[1])    
             # librosa
+            # if self.firstSongToSplit == 0 :
+            #     self.ui.original.plot(clear = True)
+            #     self.ui.comp1.plot (clear = True)
+            #     self.ui.comp2.plot(clear = True)
+            # elif self.firstSongToSplit == 1:
+            #     self.firstSongToSplit = 0  
             # if(self.data.shape[1]>=2):
             #     plotting_data = np.mean(self.data, axis=1) 
             # S_full, phase = librosa.magphase(librosa.stft(plotting_data))
@@ -89,11 +105,16 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             # self.ui.sep2.plot( fore, pen='r')
             # wavfile.write('SeparatedFile1.wav', self.samplerate, back_last)
             # wavfile.write('SeparatedFile2.wav', self.samplerate, fore_last)
-        else :
-            pass    
+          
 
     def CocktailPartyFile(self):
-        sr , data = wavfile.read("CocktailParty.wav")
+        if self.firstTime == 1 :
+            self.ui.original.plot(clear = True)
+            self.ui.comp1.plot (clear = True)
+            self.ui.comp2.plot(clear = True)
+        elif self.firstTime == 0:
+            self.firstTime = 1     
+        sr , data = wavfile.read("Data/CocktailParty.wav")
         ica = FastICA(n_components=2)
         ica.fit(data)
         S_ = ica.transform(data)
@@ -113,7 +134,13 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         # self.ui.comp3.plot(time, S_[:, 2], pen='g')
 
     def ecgFile(self):
-        data = pd.read_csv("115.csv")
+        if self.firstTime == 1 :
+            self.ui.original.plot(clear = True)
+            self.ui.comp1.plot (clear = True)
+            self.ui.comp2.plot(clear = True)
+        elif self.firstTime == 0:
+            self.firstTime = 1 
+        data = pd.read_csv("Data/115.csv")
         data = data.iloc[0:1000,1:3] 
         ica = FastICA(n_components=2)
         ica.fit(data)
@@ -134,44 +161,4 @@ def main():
 if __name__ == "__main__":
     main()
 
-# sr1 , data1 = wavfile.read("rss_mA.wav")
-# sr2 , data2 = wavfile.read("rss_mB.wav")
-# datamixed = [data1,data2]
-# print(datamixed)
-# datamixed=np.vstack(datamixed)
-# datamixed= np.transpose(datamixed)
 
-
-# # sr3 , data3 = wavfile.read("mixed3.wav")
-# # data1 = data1.transpose()
-# # data2 = data2.transpose()
-# # data3 = data3.transpose()
-# # mixed = np.array([data1[0],data2[0],data3[0],data1[1],data2[1],data3[1]])
-# # mixed = mixed.transpose()
-# wavfile.write('testmixedfile.wav', sr1, datamixed)
-# if(datamixed.shape[1]>=2):
-#     original_data = np.mean(datamixed, axis=1)
-# # print(original_data)
-# transformer = FastICA(n_components=2)
-
-# X_transformed = transformer.fit_transform(datamixed)
-# # X_transformed = transformer.components_
-# # hey =transformer.components_
-# # print(hey)
-# print(X_transformed)
-# # X_transformed = transformer.components_
-
-# X_transformed = X_transformed.transpose()
-# original_data /= abs(original_data).max(axis = 0)
-# X_transformed[0] /= abs(X_transformed[0]).max(axis = 0)
-# X_transformed[1] /= abs(X_transformed[1]).max(axis = 0)
-# # X_transformed[2] /= abs(X_transformed[2]).max(axis = 0)
-# wavfile.write('out1.wav', sr1, X_transformed[0])
-# wavfile.write('out2.wav', sr1, X_transformed[1])
-# # wavfile.write('out3.wav', sr1, X_transformed[2])
-# sample_length = X_transformed[0].shape[0]
-# time = np.arange(sample_length) / sr1
-# self.ui.original.plot(time,original_data,pen = 'y')
-# self.ui.comp1.plot(time,X_transformed[0], pen = "r")
-# self.ui.comp2.plot(time,X_transformed[1], pen = "b")
-# # self.ui.comp3.plot(time,X_transformed[2], pen = "g")
