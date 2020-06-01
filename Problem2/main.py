@@ -38,19 +38,22 @@ class MyWindow(QtWidgets.QMainWindow):
             outputData.write(imgByte)
             outputData.close()
             outputImage=QtGui.QImage(output)
-            self.pixmapImage=QtGui.QPixmap.fromImage(outputImage)           
+            self.pixmapImage=QtGui.QPixmap.fromImage(outputImage)
             self.images[i].setPixmap(self.pixmapImage)
+            self.images[i].setScaledContents(True)
+
 
     def huffmanTable(self):
         length=[]   
         valuesLegnth=[]
         byteSymbols=[]
         ACid=[]
-        for m in range (8):
-            ACid.append(m)
+        byte=[]
+        subSymbols=[]
+        for i in range (8):
+            ACid.append(i)
         self.markers=self.markerIndex("ffc4")
         for i in range (len(self.markers)):
-            byteOffset=[]
             x=list(self.data[self.markers[i]+4])
             self.upNibble.append(x[0])
             self.id.append(x[1])
@@ -58,13 +61,12 @@ class MyWindow(QtWidgets.QMainWindow):
             length.append(y)
             for j in range (16):
                offset=int(self.data[self.markers[i]+5+j],16) 
-               byteOffset.append(offset)
-            valuesLegnth.append(byteOffset[15])
+               byte.append(offset)
+            valuesLegnth.append(byte[15])
             currentIndex=self.markers[i]+21
-            subSymbols = []
-            for k in range (16):    
-                subSymbols.append(self.data[currentIndex:currentIndex+byteOffset[k]])
-                currentIndex+=byteOffset[k]
+            for j in range (16):    
+                subSymbols.append(self.data[currentIndex:currentIndex+byte[j]])
+                currentIndex+=byte[j]
             byteSymbols.append(subSymbols)
             if (self.upNibble[i]=='0'):
                 self.huffDC[int(self.id[i])]=byteSymbols[i]
